@@ -1,4 +1,4 @@
-rcgJavascriptFile <- system.file(package="RClustergrammer", "scripts", "rcg.html")
+rcgJavascriptFile <- system.file(package="RClustergrammer", "browserCode", "rclustergrammer.html")
 #------------------------------------------------------------------------------------------------------------------------
 .RClustergrammer <- setClass ("RClustergrammer",
                               representation = representation (mtx="matrix"),
