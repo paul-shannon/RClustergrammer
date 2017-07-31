@@ -1,0 +1,21 @@
+exportClasses(RClustergrammer)
+
+exportMethods(
+   displayHeatmap
+   )
+
+export(
+   RClustergrammer
+   )
+
+
+importClassesFrom(methods, character, integer)
+
+import(BiocGenerics)
+importFrom(jsonlite,fromJSON)
+importFrom(methods, new)
+importFrom(methods, as)
+import(BrowserViz)
+import(httpuv)
+import(Rcpp)
+importFrom(base64enc,base64decode)
