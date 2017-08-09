@@ -1,6 +1,7 @@
 exportClasses(RClustergrammer)
 
 exportMethods(
+   ping,
    displayHeatmap
    )
 
