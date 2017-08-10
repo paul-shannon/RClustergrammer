@@ -1,4 +1,6 @@
-build: webpack assemble buildPackage installPackage
+build: webpack assemble pkg
+
+pkg: buildPackage installPackage
 
 assemble:
 	(cd ./dist; sed s/\`//g bundle.js > bundleClean.js; m4 -P rclustergrammer.html-template > rclustergrammer.html)

@@ -1,12 +1,14 @@
-exportClasses(RClustergrammer)
+exportClasses(RClustergrammer, ClusteringTools)
 
 exportMethods(
    ping,
-   displayHeatmap
+   displayHeatmap,
+   hierarchicalCluster
    )
 
 export(
-   RClustergrammer
+   RClustergrammer,
+   ClusteringTools
    )
 
 

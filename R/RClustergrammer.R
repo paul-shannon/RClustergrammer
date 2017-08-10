@@ -7,7 +7,7 @@ rcgJavascriptFile <- system.file(package="RClustergrammer", "browserCode", "dist
                               )
 #------------------------------------------------------------------------------------------------------------------------
 setGeneric('displayHeatmap',  signature='obj', function(obj) standardGeneric ("displayHeatmap"))
-setGeneric('ping',         signature='obj', function(obj) standardGeneric ("ping"))
+setGeneric('ping',            signature='obj', function(obj) standardGeneric ("ping"))
 #------------------------------------------------------------------------------------------------------------------------
 # constructor
 RClustergrammer = function(portRange, host="localhost", title="RClustergrammer", quiet=TRUE)
