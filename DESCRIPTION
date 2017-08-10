@@ -1,7 +1,7 @@
 Package: RClustergrammer
 Type: Package
 Title: Display and manipulate heatmaps in clustergrammer.js
-Version: 0.99.4
+Version: 0.99.5
 Date: 2017-08-10
 Author: Paul Shannon, Omar Shah
 Maintainer: Paul Shannon <pshannon@systemsbiology.org>

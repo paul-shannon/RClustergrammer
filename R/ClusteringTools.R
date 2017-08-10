@@ -23,7 +23,7 @@ setMethod('hierarchicalCluster', 'ClusteringTools',
      })
 
 #------------------------------------------------------------------------------------------------------------------------
-.matrixToListWithMetaData <- function(mtx, tbl.rowmd=NULL, tbl.colmd=NULL)
+.matrixToListWithMetaData <- function(mtx, tbl.rowmd=data.frame(), tbl.colmd=data.frame())
 {
   list.cg <- .matrixToClustergrammerList(mtx)
 

@@ -1,9 +1,14 @@
 exportClasses(RClustergrammer, ClusteringTools)
 
 exportMethods(
-   ping,
-   displayHeatmap,
-   hierarchicalCluster
+   setMatrix,
+   setRowMetadata,
+   setColumnMetadata,
+   getMatrix,
+   getRowMetadata,
+   getColumnMetadata,
+   clusterAndDisplay,
+   ping
    )
 
 export(
