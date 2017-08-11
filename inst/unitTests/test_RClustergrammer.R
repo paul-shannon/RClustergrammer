@@ -125,16 +125,42 @@ test_getSetMetadata <- function()
 #------------------------------------------------------------------------------------------------------------------------
 test_clusterAndDisplay_tiny <- function ()
 {
+   rcg <- RClustergrammer(portRange=PORT_RANGE)
+
    x <- createSampleData(rows=8, cols=10, columnMetadataCategories=2, rowMetadataCategories=3)
+   clusterAndDisplay(rcg, method="hclust", x$mtx, x$rmd, x$cmd)
 
-   rcg <- RClustergrammer(portRange=PORT_RANGE, mtx=x$mtx,
-                          rowMetadata=x$rmd, columnMetadata=x$cmd, quiet=FALSE)
+   x2 <- createSampleData(rows=80, cols=100, columnMetadataCategories=2, rowMetadataCategories=3)
+   clusterAndDisplay(rcg, method="hclust", x2$mtx, x2$rmd, x2$cmd)
 
-   rcg <- RClustergrammer(portRange=PORT_RANGE, mtx=mtx.microglial)
-
-   clusterAndDisplay(rcg, method="hclust")
+   load(system.file(package="RClustergrammer", "extdata", "mtx.microglial.RData"))
+   clusterAndDisplay(rcg, method="hclust", mtx.microglial)
 
 } # test_clusterAndDisplay_tiny
+#------------------------------------------------------------------------------------------------------------------------
+simulate_martinSheltonBug <- function()
+{
+   mtx <- matrix(rep(0, 100), nrow=10)
+   set.seed(31)
+   row.numbers <- sample(1:10, 10, replace=TRUE)
+   col.numbers <- sample(1:10, 10, replace=TRUE)
+   for(i in 1:10) mtx[row.numbers[i], col.numbers[i]] <- runif(1, 2, 10)
+   rownames(mtx) <- paste("R", 1:10, sep="")
+   colnames(mtx) <- paste("C", 1:10, sep="")
+
+   rcg <- RClustergrammer(portRange=PORT_RANGE)
+   clusterAndDisplay(rcg, method="hclust", mtx)
+
+} # test_martinSheltonBug
+#------------------------------------------------------------------------------------------------------------------------
+martinSheltonsMatrix <- function()
+{
+  tbl <- read.table("~/s/work/priceLab/martinShelton/singleCellNeuronData/neuron.dg2.all.txt", sep="\t", as.is=TRUE, nrow=-1, header=TRUE)
+  mtx <- as.matrix(tbl[, 2:ncol(tbl)])
+  rownames(mtx) <- sub("qpcr-", "", tbl[,1])
+  mtx <- asinh(mtx)
+
+} # martinSheltonsMatrix
 #------------------------------------------------------------------------------------------------------------------------
 
 

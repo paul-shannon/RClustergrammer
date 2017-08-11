@@ -7,36 +7,30 @@ rcgJavascriptFile <- system.file(package="RClustergrammer", "browserCode", "dist
                               prototype = prototype (uri="http://localhost", 9200)
                               )
 #------------------------------------------------------------------------------------------------------------------------
-setGeneric("setMatrix",          signature="obj", function(obj, mtx) standardGeneric ("setMatrix"))
-setGeneric("setRowMetadata",     signature="obj", function(obj, tbl.md) standardGeneric ("setRowMetadata"))
-setGeneric("setColumnMetadata",  signature="obj", function(obj, tbl.md) standardGeneric ("setColumnMetadata"))
+#setGeneric("setMatrix",          signature="obj", function(obj, mtx) standardGeneric ("setMatrix"))
+#setGeneric("setRowMetadata",     signature="obj", function(obj, tbl.md) standardGeneric ("setRowMetadata"))
+#setGeneric("setColumnMetadata",  signature="obj", function(obj, tbl.md) standardGeneric ("setColumnMetadata"))
 setGeneric("getMatrix",          signature="obj", function(obj, matrix) standardGeneric ("getMatrix"))
 setGeneric("getRowMetadata",     signature="obj", function(obj) standardGeneric ("getRowMetadata"))
 setGeneric("getColumnMetadata",  signature="obj", function(obj) standardGeneric ("getColumnMetadata"))
-setGeneric("clusterAndDisplay",  signature="obj", function(obj, method) standardGeneric ("clusterAndDisplay"))
+setGeneric("clusterAndDisplay",  signature="obj", function(obj, method, matrix, rowMetadata=data.frame(), columnMetadata=data.frame())
+                standardGeneric ("clusterAndDisplay"))
 setGeneric("ping",               signature="obj", function(obj) standardGeneric ("ping"))
 #------------------------------------------------------------------------------------------------------------------------
 # constructor
 RClustergrammer = function(portRange, host="localhost", title="RClustergrammer",
-                           mtx=matrix(), rowMetadata=data.frame(), columnMetadata=data.frame(),
+#                           mtx=matrix(), rowMetadata=data.frame(), columnMetadata=data.frame(),
                            quiet=TRUE)
 {
    state <- new.env()
-   state$mtx <- mtx
-   state$rowMetadata <- rowMetadata
-   state$columnMetadata <- columnMetadata
+   state$mtx <- matrix()
+   state$rowMetadata <- data.frame()
+   state$columnMetadata <- data.frame()
    .RClustergrammer(BrowserViz(portRange, host, title, quiet, browserFile=rcgJavascriptFile,
                                httpQueryProcessingFunction=myQP),
                     state=state)
 
 } # RClustergrammer: constructor
-#------------------------------------------------------------------------------------------------------------------------
-setMethod("setMatrix", "RClustergrammer",
-
-    function(obj, mtx) {
-       obj@state$mtx <- mtx
-       })
-
 #------------------------------------------------------------------------------------------------------------------------
 setMethod("getMatrix", "RClustergrammer",
 
@@ -45,30 +39,10 @@ setMethod("getMatrix", "RClustergrammer",
        })
 
 #------------------------------------------------------------------------------------------------------------------------
-setMethod("setRowMetadata", "RClustergrammer",
-
-    function(obj, tbl.md) {
-       if(nrow(getMatrix(obj)) == 0)
-           stop("error in RClustergrammer::setRowMetadata: must set matrix before metadata")
-       stopifnot(rownames(tbl.md) == rownames(getMatrix(obj)))
-       obj@state$rowMetadata <- tbl.md
-       })
-
-#------------------------------------------------------------------------------------------------------------------------
 setMethod("getRowMetadata", "RClustergrammer",
 
     function(obj) {
        obj@state$rowMetadata
-       })
-
-#------------------------------------------------------------------------------------------------------------------------
-setMethod("setColumnMetadata", "RClustergrammer",
-
-    function(obj, tbl.md) {
-       if(ncol(getMatrix(obj)) == 0)
-           stop("error in RClustergrammer::setRowMetadata: must set matrix before metadata")
-       stopifnot(rownames(tbl.md) == colnames(getMatrix(obj)))
-       obj@state$columnMetadata <- tbl.md
        })
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -81,9 +55,9 @@ setMethod("getColumnMetadata", "RClustergrammer",
 #------------------------------------------------------------------------------------------------------------------------
 setMethod("clusterAndDisplay", "RClustergrammer",
 
-   function(obj, method) {
+   function(obj, method, matrix, rowMetadata=data.frame(), columnMetadata=data.frame()) {
      stopifnot(method == "hclust")  # TODO stopgap.  biclust, k-means to be added
-     cg.list <- .matrixToListWithMetaData(obj@state$mtx, obj@state$rowMetadata, obj@state$columnMetadata)
+     cg.list <- .matrixToListWithMetaData(matrix, rowMetadata, columnMetadata)
      cg.json <- toJSON(cg.list)
      filename <- "cg.json"
      write(cg.json, file=filename)

@@ -1,9 +1,6 @@
 exportClasses(RClustergrammer, ClusteringTools)
 
 exportMethods(
-   setMatrix,
-   setRowMetadata,
-   setColumnMetadata,
    getMatrix,
    getRowMetadata,
    getColumnMetadata,

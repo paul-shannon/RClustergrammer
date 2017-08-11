@@ -70,9 +70,11 @@ function displayMatrix(matrixObject)
    $("#cgDiv").width(screen_width);
    $("#cgDiv").height(screen_height);
 
+   $("#cgDiv").empty()
+
+   //$("#cgDiv .wait_message").remove()
    window.cgm = Clustergrammer(args);
 
-   $("#cgDiv .wait_message").remove()
    console.log('loading clustergrammer')
 
 } // displayMatrix
