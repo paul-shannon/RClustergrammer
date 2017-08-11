@@ -51,15 +51,25 @@ setMethod('hierarchicalCluster', 'ClusteringTools',
    r <- nrow(mtx)
    c <- ncol(mtx)
 
-   if(r > 11) {
-       r = 11
+   kMax <- 11
+
+   if(r > kMax) {
+       r = kMax
        } #optimal k-value = 11
-   if(c > 11) {
-       c = 11
+   if(c > kMax) {
+       c = kMax
        } #optimal k-value = 11
 
-   treeMtx.rows <- cutree(hc.rows, k=1:r)
-   treeMtx.cols <- cutree(hc.cols, k=1:c)
+   #k <- c( 1,2,3,4,5,6,7,8,9,10,11)
+   #k <- c(1, 20, 40, 60,80, 100, 120, 140, 154)
+
+   r.kIndices <- seq(1, nrow(mtx), length=kMax)
+   c.kIndices <- seq(1, ncol(mtx), length=kMax)
+
+   treeMtx.rows <- cutree(hc.rows, k=r.kIndices)
+   treeMtx.cols <- cutree(hc.cols, k=c.kIndices)
+   #treeMtx.rows <- cutree(hc.rows, k=1:r)
+   #treeMtx.cols <- cutree(hc.cols, k=1:c)
 
    rowname <- hc.rows$labels[hc.rows$order]
    rowclust <- 1:nrow(treeMtx.rows)

@@ -159,6 +159,9 @@ martinSheltonsMatrix <- function()
   mtx <- as.matrix(tbl[, 2:ncol(tbl)])
   rownames(mtx) <- sub("qpcr-", "", tbl[,1])
   mtx <- asinh(mtx)
+  rcg <- RClustergrammer(portRange=PORT_RANGE)
+  clusterAndDisplay(rcg, method="hclust", mtx)
+
 
 } # martinSheltonsMatrix
 #------------------------------------------------------------------------------------------------------------------------
