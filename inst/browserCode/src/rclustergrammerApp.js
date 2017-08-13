@@ -3,7 +3,7 @@ import css from './css/custom.css';
 import css from './css/custom_scrolling.css';
 import css from './css/font-awesome.min.css';
 
-var demoMatrix = require("./demoData/threebyThree.json");
+//var demoMatrix = require("./demoData/threebyThree.json");
 
 var ClustergrammerModule = (function(){
 //------------------------------------------------------------------------------------------------------------------------
@@ -15,8 +15,14 @@ function setHub(newHub)
 //------------------------------------------------------------------------------------------------------------------------
 function addMessageHandlers()
 {
-   hub.addMessageHandler("ping",       ping)
-   hub.addMessageHandler("displayClusteredMatrix",  displayClusteredMatrix)
+   hub.addMessageHandler("ping",                    ping);
+   hub.addMessageHandler("displayClusteredMatrix",  displayClusteredMatrix);
+   hub.addMessageHandler("getRowNames",             getRowNames);
+   hub.addMessageHandler("getColumnNames",          getColumnNames);
+   hub.addMessageHandler("selectRows",              selectRows);
+   hub.addMessageHandler("selectColumns",           selectColumns);
+   hub.addMessageHandler("selectRowsAndColumns",    selectRowsAndColumns);
+   hub.addMessageHandler("showAll",                 showAll);
 
 } // addMessageHandlers
 //------------------------------------------------------------------------------------------------------------------------
@@ -50,7 +56,7 @@ function displayClusteredMatrix(msg)
 
    hub.send({cmd: msg.callback, status: "success", callback: "", payload: ""});
 
-} // setMatrix
+} // displayClusteredMatrix
 //------------------------------------------------------------------------------------------------------------------------
 function displayMatrix(matrixObject)
 {
@@ -72,36 +78,79 @@ function displayMatrix(matrixObject)
 
    $("#cgDiv").empty()
 
-   //$("#cgDiv .wait_message").remove()
    window.cgm = Clustergrammer(args);
 
    console.log('loading clustergrammer')
 
 } // displayMatrix
 //------------------------------------------------------------------------------------------------------------------------
+function getRowNames(msg)
+{
+   console.log("--- getRowNames")
+   console.log(msg);
+   var namesOfVisibleRows = cgm.params.network_data.row_nodes_names;
+
+   hub.send({cmd: msg.callback, status: "success", callback: "", payload: namesOfVisibleRows});
+
+} // getRowNames
+//------------------------------------------------------------------------------------------------------------------------
+function getColumnNames(msg)
+{
+   console.log("--- getColumnNames")
+   var namesOfVisibleColumns = cgm.params.network_data.col_nodes_names;
+
+   hub.send({cmd: msg.callback, status: "success", callback: "", payload: namesOfVisibleColumns});
+
+} // getColumnNames
+//------------------------------------------------------------------------------------------------------------------------
+function selectRows(msg)
+{
+   console.log("--- selectRows")
+   var rowNames = msg.payload;
+   var currentColumnNames = cgm.params.network_data.col_nodes_names;
+   cgm.filter_viz_using_names({row: rowNames});
+   //cgm.filter_viz_using_names({row: rowNames, col: currentColumnNames});
+
+   hub.send({cmd: msg.callback, status: "success", callback: "", payload: ""});
+
+} // selectRows
+//------------------------------------------------------------------------------------------------------------------------
+function selectColumns(msg)
+{
+   console.log("--- selectColumns")
+   var columnNames = msg.payload;
+   var currentRowNames = cgm.params.network_data.row_nodes_names;
+   cgm.filter_viz_using_names({col: columnNames});
+   //cgm.filter_viz_using_names({row: currentRowNames, col: columnNames});
+
+   hub.send({cmd: msg.callback, status: "success", callback: "", payload: ""});
+
+} // selectRows
+//------------------------------------------------------------------------------------------------------------------------
+function selectRowsAndColumns(msg)
+{
+   console.log("--- selectRowsAndColumns")
+   var rowNames = msg.payload.rows;
+   var columnNames = msg.payload.cols;
+   cgm.filter_viz_using_names({row: rowNames, col: columnNames});
+   //cgm.filter_viz_using_names({row: rowNames, col: currentColumnNames});
+
+   hub.send({cmd: msg.callback, status: "success", callback: "", payload: ""});
+
+} // selectRows
+//------------------------------------------------------------------------------------------------------------------------
+function showAll(msg)
+{
+   console.log("--- showAll");
+   cgm.filter_viz_using_names([]);
+
+   hub.send({cmd: msg.callback, status: "success", callback: "", payload: ""});
+
+} // selectRows
+//------------------------------------------------------------------------------------------------------------------------
 function initializeClusterGrammerUI()
 {
    window.cwg = Clustergrammer;
-   //setTimeout(function(){displayMatrix(demoMatrix)}, 0)
-
-   /****************
-   function make_clust(network_data){
-          var args = {
-            root: '#cgDiv',
-            'network_data': network_data,
-            'about': about_string,
-            'sidebar_width':150,
-            };
-         var screen_width = window.innerWidth;
-         var screen_height = window.innerHeight - 20;
-         $("#cgDiv").width(screen_width);
-         $("#cgDiv").height(screen_height);
-         window.cgm = Clustergrammer(args);
-         $("#cgDiv .wait_message").remove()
-         console.log('loading clustergrammer')
-    }; // make_clust
-  setTimeout(function(){make_clust(demoMatrix);}, 0);
-  ********/
 
 } // initializeClusterGrammerUI
 //------------------------------------------------------------------------------------------------------------------------

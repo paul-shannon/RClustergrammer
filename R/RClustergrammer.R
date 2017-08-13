@@ -7,14 +7,17 @@ rcgJavascriptFile <- system.file(package="RClustergrammer", "browserCode", "dist
                               prototype = prototype (uri="http://localhost", 9200)
                               )
 #------------------------------------------------------------------------------------------------------------------------
-#setGeneric("setMatrix",          signature="obj", function(obj, mtx) standardGeneric ("setMatrix"))
-#setGeneric("setRowMetadata",     signature="obj", function(obj, tbl.md) standardGeneric ("setRowMetadata"))
-#setGeneric("setColumnMetadata",  signature="obj", function(obj, tbl.md) standardGeneric ("setColumnMetadata"))
-setGeneric("getMatrix",          signature="obj", function(obj, matrix) standardGeneric ("getMatrix"))
-setGeneric("getRowMetadata",     signature="obj", function(obj) standardGeneric ("getRowMetadata"))
-setGeneric("getColumnMetadata",  signature="obj", function(obj) standardGeneric ("getColumnMetadata"))
+setGeneric("getMatrix",          signature="obj", function(obj, matrix) standardGeneric("getMatrix"))
+setGeneric("getRowMetadata",     signature="obj", function(obj) standardGeneric("getRowMetadata"))
+setGeneric("getColumnMetadata",  signature="obj", function(obj) standardGeneric("getColumnMetadata"))
 setGeneric("clusterAndDisplay",  signature="obj", function(obj, method, matrix, rowMetadata=data.frame(), columnMetadata=data.frame())
-                standardGeneric ("clusterAndDisplay"))
+                                   standardGeneric("clusterAndDisplay"))
+setGeneric("getRowNames",        signature="obj", function(obj) standardGeneric("getRowNames"))
+setGeneric("getColumnNames",     signature="obj", function(obj) standardGeneric("getColumnNames"))
+setGeneric("selectRows",         signature="obj", function(obj, rowNames) standardGeneric("selectRows"))
+setGeneric("selectColumns",      signature="obj", function(obj, columnNames) standardGeneric("selectColumns"))
+setGeneric("selectRowsAndColumns", signature="obj", function(obj, rowNames, columnNames) standardGeneric("selectRowsAndColumns"))
+setGeneric("showAll",            signature="obj", function(obj, columnNames) standardGeneric("showAll"))
 setGeneric("ping",               signature="obj", function(obj) standardGeneric ("ping"))
 #------------------------------------------------------------------------------------------------------------------------
 # constructor
@@ -76,7 +79,86 @@ setMethod("ping", "RClustergrammer",
 
      send(obj, list(cmd="ping", callback="handleResponse", status="request", payload=""))
      while (!browserResponseReady(obj)){
-        if(!obj@quiet) message(sprintf("plot waiting for browser response"));
+        if(!obj@quiet) message(sprintf("ping waiting for browser response"));
+        Sys.sleep(.1)
+        }
+     getBrowserResponse(obj)
+     })
+
+#------------------------------------------------------------------------------------------------------------------------
+setMethod("getRowNames", "RClustergrammer",
+
+   function(obj) {
+
+     send(obj, list(cmd="getRowNames", callback="handleResponse", status="request", payload=""))
+     while (!browserResponseReady(obj)){
+        if(!obj@quiet) message(sprintf("getRowNames waiting for browser response"));
+        Sys.sleep(.1)
+        }
+     getBrowserResponse(obj)
+     })
+
+#------------------------------------------------------------------------------------------------------------------------
+setMethod("getColumnNames", "RClustergrammer",
+
+   function(obj) {
+
+     send(obj, list(cmd="getColumnNames", callback="handleResponse", status="request", payload=""))
+     while (!browserResponseReady(obj)){
+        if(!obj@quiet) message(sprintf("getColumnNames waiting for browser response"));
+        Sys.sleep(.1)
+        }
+     getBrowserResponse(obj)
+     })
+
+#------------------------------------------------------------------------------------------------------------------------
+setMethod("selectRows", "RClustergrammer",
+
+   function(obj, rowNames) {
+
+     send(obj, list(cmd="selectRows", callback="handleResponse", status="request", payload=rowNames))
+     while (!browserResponseReady(obj)){
+        if(!obj@quiet) message(sprintf("selectRows waiting for browser response"));
+        Sys.sleep(.1)
+        }
+     getBrowserResponse(obj)
+     })
+
+#------------------------------------------------------------------------------------------------------------------------
+setMethod("selectColumns", "RClustergrammer",
+
+   function(obj, columnNames) {
+
+     send(obj, list(cmd="selectColumns", callback="handleResponse", status="request", payload=columnNames))
+     while (!browserResponseReady(obj)){
+        if(!obj@quiet) message(sprintf("selectColumns waiting for browser response"));
+        Sys.sleep(.1)
+        }
+     getBrowserResponse(obj)
+     })
+
+#------------------------------------------------------------------------------------------------------------------------
+setMethod("selectRowsAndColumns", "RClustergrammer",
+
+   function(obj, rowNames, columnNames) {
+
+     payload = list(rows=rowNames, cols=columnNames)
+     send(obj, list(cmd="selectRowsAndColumns", callback="handleResponse", status="request", payload=payload))
+     while (!browserResponseReady(obj)){
+        if(!obj@quiet) message(sprintf("selectRows waiting for browser response"));
+        Sys.sleep(.1)
+        }
+     getBrowserResponse(obj)
+     })
+
+#------------------------------------------------------------------------------------------------------------------------
+setMethod("showAll", "RClustergrammer",
+
+   function(obj) {
+
+     send(obj, list(cmd="showAll", callback="handleResponse", status="request", payload=""))
+     while (!browserResponseReady(obj)){
+        if(!obj@quiet) message(sprintf("selectColumns waiting for browser response"));
         Sys.sleep(.1)
         }
      getBrowserResponse(obj)

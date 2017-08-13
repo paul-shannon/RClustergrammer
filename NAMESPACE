@@ -5,6 +5,12 @@ exportMethods(
    getRowMetadata,
    getColumnMetadata,
    clusterAndDisplay,
+   getRowNames,
+   getColumnNames,
+   selectRows,
+   selectColumns,
+   selectRowsAndColumns,
+   showAll,
    ping
    )
 

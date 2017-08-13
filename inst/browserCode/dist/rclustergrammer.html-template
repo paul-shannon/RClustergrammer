@@ -8,7 +8,7 @@ m4_include(bundleClean.js)
 <body>
 
    <div id="cgDiv">
-      <h1 class='wait_message'>Please wait ...</h1>
+      <h1 class='wait_message'>Heatmap will display here...</h1>
   </div>
 
 </body>

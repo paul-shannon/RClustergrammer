@@ -7,9 +7,8 @@ runTests <- function()
 {
    test_constructor()
    test_createSampleData()
-   test_getSetMatrix()
-   test_getSetMetadata()
    test_clusterAndDisplay_tiny()
+   test_clusterAndDisplay_medium()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
@@ -70,27 +69,11 @@ test_constructor <- function()
    printf("--- test_constructor")
 
       # create with an empty matrix
-   rcg <- RClustergrammer(portRange=PORT_RANGE, mtx=matrix())
+   rcg <- RClustergrammer(portRange=PORT_RANGE)
    checkEquals(sort(is(rcg)), c("BrowserVizClass", "RClustergrammer"))
    checkTrue(all(is.na(getMatrix(rcg))))
 
 } # test_constructor
-#------------------------------------------------------------------------------------------------------------------------
-test_getSetMatrix <- function()
-{
-   printf("--- test_getSetMatrix")
-
-      # create with an empty matrix
-
-   mtx.3x3 <- matrix(c(1:9), nrow=3, dimnames=list(c("R1","R2","R3"), c("C1","C2","C3")))
-   rcg <- RClustergrammer(portRange=PORT_RANGE, mtx=mtx.3x3)
-   checkEquals(getMatrix(rcg), mtx.3x3)
-
-   mtx.6x4 <- matrix(1:24, nrow=6, dimnames=list(paste("R", 1:6, sep=""), paste("C", 1:4, sep="")))
-   setMatrix(rcg, mtx.6x4)
-   checkEquals(getMatrix(rcg), mtx.6x4)
-
-} # test_getSetMatrix
 #------------------------------------------------------------------------------------------------------------------------
 test_getSetMetadata <- function()
 {
@@ -125,18 +108,70 @@ test_getSetMetadata <- function()
 #------------------------------------------------------------------------------------------------------------------------
 test_clusterAndDisplay_tiny <- function ()
 {
+   printf("--- test_clusterAndDisplay_tiny")
+
    rcg <- RClustergrammer(portRange=PORT_RANGE)
 
    x <- createSampleData(rows=8, cols=10, columnMetadataCategories=2, rowMetadataCategories=3)
    clusterAndDisplay(rcg, method="hclust", x$mtx, x$rmd, x$cmd)
 
+   rcg
+
+} # test_clusterAndDisplay_tiny
+#------------------------------------------------------------------------------------------------------------------------
+test_clusterAndDisplay_medium <- function ()
+{
+   printf("--- test_clusterAndDisplay_medium")
+
+   rcg <- RClustergrammer(portRange=PORT_RANGE)
+
    x2 <- createSampleData(rows=80, cols=100, columnMetadataCategories=2, rowMetadataCategories=3)
    clusterAndDisplay(rcg, method="hclust", x2$mtx, x2$rmd, x2$cmd)
+
+   rcg
+
+} # test_clusterAndDisplay_medim
+#------------------------------------------------------------------------------------------------------------------------
+test_clusterAndDisplay_big <- function ()
+{
+   printf("--- test_clusterAndDisplay_big")
+
+   rcg <- RClustergrammer(portRange=PORT_RANGE)
 
    load(system.file(package="RClustergrammer", "extdata", "mtx.microglial.RData"))
    clusterAndDisplay(rcg, method="hclust", mtx.microglial)
 
-} # test_clusterAndDisplay_tiny
+   rcg
+
+} # test_clusterAndDisplay_big
+#------------------------------------------------------------------------------------------------------------------------
+test_selectRowsAndColumns <- function ()
+{
+   printf("--- test_selectRowsAndColumns")
+   rcg <- RClustergrammer(portRange=PORT_RANGE)
+
+   x <- createSampleData(rows=80, cols=100, columnMetadataCategories=2, rowMetadataCategories=3)
+   clusterAndDisplay(rcg, method="hclust", x$mtx, x$rmd, x$cmd)
+
+   selectRowsAndColumns(rcg, head(rownames(x$mtx)), head(colnames(x$mtx)))
+   Sys.sleep(2)
+   showAll(rcg)
+
+   selectRows(rcg, tail(rownames(x$mtx)))
+   checkEquals(sort(getRowNames(rcg)), sort(tail(rownames(x$mtx))))
+   Sys.sleep(2)
+   showAll(rcg)
+   checkEquals(sort(getRowNames(rcg)), sort(rownames(x$mtx)))
+   checkEquals(sort(getColumnNames(rcg)), sort(colnames(x$mtx)))
+
+   selectColumns(rcg, tail(colnames(x$mtx)))
+   checkEquals(sort(getColumnNames(rcg)), sort(tail(colnames(x$mtx))))
+   Sys.sleep(2)
+   showAll(rcg)
+
+   rcg
+
+} # test_clusterAndDisplay_medim
 #------------------------------------------------------------------------------------------------------------------------
 simulate_martinSheltonBug <- function()
 {
@@ -150,21 +185,23 @@ simulate_martinSheltonBug <- function()
 
    rcg <- RClustergrammer(portRange=PORT_RANGE)
    clusterAndDisplay(rcg, method="hclust", mtx)
+   rcg
 
 } # test_martinSheltonBug
 #------------------------------------------------------------------------------------------------------------------------
 martinSheltonsMatrix <- function()
 {
-  tbl <- read.table("~/s/work/priceLab/martinShelton/singleCellNeuronData/neuron.dg2.all.txt", sep="\t", as.is=TRUE, nrow=-1, header=TRUE)
+  tbl <- read.table("~/s/work/priceLab/martinShelton/singleCellNeuronData/neuron.dg2.all.txt",
+                    sep="\t", as.is=TRUE, nrow=-1, header=TRUE)
   mtx <- as.matrix(tbl[, 2:ncol(tbl)])
   rownames(mtx) <- sub("qpcr-", "", tbl[,1])
   mtx <- asinh(mtx)
   rcg <- RClustergrammer(portRange=PORT_RANGE)
   clusterAndDisplay(rcg, method="hclust", mtx)
 
-
 } # martinSheltonsMatrix
 #------------------------------------------------------------------------------------------------------------------------
+
 
 
 

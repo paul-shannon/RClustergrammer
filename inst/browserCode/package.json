@@ -12,7 +12,7 @@
   "dependencies": {
      "browservizjs": "^1.0.0",
      "jquery": "^3.2.1",
-     "clustergrammer": "^1.18.0"
+     "clustergrammer": "^1.19.0"
   },
   "devDependencies": {
     "bootstrap": "^4.0.0-alpha.4",
