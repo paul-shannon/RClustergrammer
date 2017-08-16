@@ -9,6 +9,7 @@ runTests <- function()
    test_createSampleData()
    test_clusterAndDisplay_tiny()
    test_clusterAndDisplay_medium()
+   test_selectRowsAndColumns()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
@@ -71,40 +72,39 @@ test_constructor <- function()
       # create with an empty matrix
    rcg <- RClustergrammer(portRange=PORT_RANGE)
    checkEquals(sort(is(rcg)), c("BrowserVizClass", "RClustergrammer"))
-   checkTrue(all(is.na(getMatrix(rcg))))
 
 } # test_constructor
 #------------------------------------------------------------------------------------------------------------------------
-test_getSetMetadata <- function()
-{
-   printf("--- test_getSetMetadata")
-
-      # create with an empty matrix
-
-   mtx.6x4 <- matrix(1:24, nrow=6, dimnames=list(paste("R", 1:6, sep=""), paste("C", 1:4, sep="")))
-
-   rcg <- RClustergrammer(portRange=PORT_RANGE, mtx=mtx.6x4)
-   checkEquals(getMatrix(rcg), mtx.6x4)
-
-      # two metadata categories for the rows: Placement and Shape
-   tbl.rmd <- data.frame(row.names=c("R1","R2","R3", "R4", "R5", "R6"),
-                         Placement=c("First", "Second", "Third", "Fourth", "Fifth", "Sixth"),
-                         Shape=c("Triangle", "Square", "Circle", "Trapezoid", "Rhombus", "Crescent"),
-                         stringsAsFactors=FALSE)
-
-   setRowMetadata(rcg, tbl.rmd)
-   checkEquals(getRowMetadata(rcg), tbl.rmd)
-
-     # three metadata categories for the columns: Placement, Colors, group
-   tbl.cmd <- data.frame(row.names=c("C1","C2","C3", "C4"),
-                         Placement=c("One", "Two", "Three", "Last"),
-                         Colors=c("Red", "Green", "Blue", "Magenta"),
-                         group=c("w", "x", "y", "z"),
-                         stringsAsFactors=FALSE)
-   setColumnMetadata(rcg, tbl.cmd)
-   checkEquals(getColumnMetadata(rcg), tbl.cmd)
-
-} # test_getSetMetadata
+# test_getSetMetadata <- function()
+# {
+#    printf("--- test_getSetMetadata")
+#
+#       # create with an empty matrix
+#
+#    mtx.6x4 <- matrix(1:24, nrow=6, dimnames=list(paste("R", 1:6, sep=""), paste("C", 1:4, sep="")))
+#
+#    rcg <- RClustergrammer(portRange=PORT_RANGE, mtx=mtx.6x4)
+#    checkEquals(getMatrix(rcg), mtx.6x4)
+#
+#       # two metadata categories for the rows: Placement and Shape
+#    tbl.rmd <- data.frame(row.names=c("R1","R2","R3", "R4", "R5", "R6"),
+#                          Placement=c("First", "Second", "Third", "Fourth", "Fifth", "Sixth"),
+#                          Shape=c("Triangle", "Square", "Circle", "Trapezoid", "Rhombus", "Crescent"),
+#                          stringsAsFactors=FALSE)
+#
+#    setRowMetadata(rcg, tbl.rmd)
+#    checkEquals(getRowMetadata(rcg), tbl.rmd)
+#
+#      # three metadata categories for the columns: Placement, Colors, group
+#    tbl.cmd <- data.frame(row.names=c("C1","C2","C3", "C4"),
+#                          Placement=c("One", "Two", "Three", "Last"),
+#                          Colors=c("Red", "Green", "Blue", "Magenta"),
+#                          group=c("w", "x", "y", "z"),
+#                          stringsAsFactors=FALSE)
+#    setColumnMetadata(rcg, tbl.cmd)
+#    checkEquals(getColumnMetadata(rcg), tbl.cmd)
+#
+# } # test_getSetMetadata
 #------------------------------------------------------------------------------------------------------------------------
 test_clusterAndDisplay_tiny <- function ()
 {
@@ -113,6 +113,11 @@ test_clusterAndDisplay_tiny <- function ()
    rcg <- RClustergrammer(portRange=PORT_RANGE)
 
    x <- createSampleData(rows=8, cols=10, columnMetadataCategories=2, rowMetadataCategories=3)
+   contrived.mtx <- x$mtx
+   contrived.mtx[, 2] <- contrived.mtx[, 1]
+   contrived.mtx[3, ] <- contrived.mtx[5, ]
+   x$mtx <- contrived.mtx
+
    clusterAndDisplay(rcg, method="hclust", x$mtx, x$rmd, x$cmd)
 
    rcg
@@ -125,8 +130,15 @@ test_clusterAndDisplay_medium <- function ()
 
    rcg <- RClustergrammer(portRange=PORT_RANGE)
 
-   x2 <- createSampleData(rows=80, cols=100, columnMetadataCategories=2, rowMetadataCategories=3)
-   clusterAndDisplay(rcg, method="hclust", x2$mtx, x2$rmd, x2$cmd)
+   x <- createSampleData(rows=20, cols=6, columnMetadataCategories=2, rowMetadataCategories=3)
+   contrived.mtx <- x$mtx
+   contrived.mtx[, c(2,4)] <- contrived.mtx[, 1]
+   contrived.mtx[1:2, ] <- contrived.mtx[5, ]
+   x$mtx <- contrived.mtx
+
+   col.branches <- c(1, 3, 5)
+   row.branches <- NA # c(1:5)
+   clusterAndDisplay(rcg, method="hclust", x$mtx, x$rmd, x$cmd, row.branches, col.branches)
 
    rcg
 
@@ -197,7 +209,12 @@ martinSheltonsMatrix <- function()
   rownames(mtx) <- sub("qpcr-", "", tbl[,1])
   mtx <- asinh(mtx)
   rcg <- RClustergrammer(portRange=PORT_RANGE)
-  clusterAndDisplay(rcg, method="hclust", mtx)
+
+  col.branches <- c(1:11)
+  col.branches <- as.integer(c(seq(1, 33, length=5), seq(150, 187, length=6)))
+  row.branches <- NA # c(1:5)
+  clusterAndDisplay(rcg, method="hclust", mtx, row.branches=row.branches, col.branches=col.branches)
+
 
 } # martinSheltonsMatrix
 #------------------------------------------------------------------------------------------------------------------------

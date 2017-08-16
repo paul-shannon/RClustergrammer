@@ -23,9 +23,9 @@ setMethod('hierarchicalCluster', 'ClusteringTools',
      })
 
 #------------------------------------------------------------------------------------------------------------------------
-.matrixToListWithMetaData <- function(mtx, tbl.rowmd=data.frame(), tbl.colmd=data.frame())
+.matrixToListWithMetaData <- function(mtx, tbl.rowmd=data.frame(), tbl.colmd=data.frame(), row.branches=NA, col.branches=NA)
 {
-  list.cg <- .matrixToClustergrammerList(mtx)
+  list.cg <- .matrixToClustergrammerList(mtx, row.branches, col.branches)
 
   if(nrow(tbl.rowmd)) {
       for(i in 1:ncol(tbl.rowmd)) {
@@ -43,31 +43,51 @@ setMethod('hierarchicalCluster', 'ClusteringTools',
 
 } # matrixToListWithMetaData
 #--------------------------------------------------------------------------------
-.matrixToClustergrammerList <- function(mtx)
+.matrixToClustergrammerList <- function(mtx, row.branches=NA, col.branches=NA)
 {
+
+    # the clustergrammer widget (at present - 15 aug 2017) allows only 11
+    # levels of tree branching.  there should always be n-1 branches [is this true?]
+
    hc.rows <- hclust(dist(mtx))
    hc.cols <- hclust(dist(t(mtx)))
 
-   r <- nrow(mtx)
-   c <- ncol(mtx)
+   clustergrammerMaxBranches <- 11
 
-   kMax <- 11
+   rowBranchCount <- nrow(mtx)# - 1
+   colBranchCount <- ncol(mtx)# - 1
 
-   if(r > kMax) {
-       r = kMax
-       } #optimal k-value = 11
-   if(c > kMax) {
-       c = kMax
-       } #optimal k-value = 11
+   if(is.na(row.branches)){
+      if(rowBranchCount <= 11){
+         row.branches <- seq_len(rowBranchCount)
+         }
+      else{
+         row.branches <- as.integer(seq(1, rowBranchCount, length=clustergrammerMaxBranches))
+         }
+      } # if row.branches not provided
 
-   #k <- c( 1,2,3,4,5,6,7,8,9,10,11)
-   #k <- c(1, 20, 40, 60,80, 100, 120, 140, 154)
+   if(is.na(col.branches)){
+      if(colBranchCount <= 11){
+         col.branches <- seq_len(colBranchCount)
+        }
+     else{
+         col.branches <- as.integer(seq(1, colBranchCount, length=clustergrammerMaxBranches))
+        }
+      } # if col.branches not provide
 
-   r.kIndices <- seq(1, nrow(mtx), length=kMax)
-   c.kIndices <- seq(1, ncol(mtx), length=kMax)
 
-   treeMtx.rows <- cutree(hc.rows, k=r.kIndices)
-   treeMtx.cols <- cutree(hc.cols, k=c.kIndices)
+   #r.kIndices <- as.integer(seq(1, nrow(mtx), length=kMax))
+   #c.kIndices <- as.integer(seq(1, ncol(mtx), length=kMax))
+   #r.kIndices <- tail(seq_len(nrow(mtx)), n=10)
+   #c.kIndices <- tail(seq_len(ncol(mtx)), n=10)
+
+      # cutree docs say k is "an integer scalar or vector with the desired number of groups"
+
+   treeMtx.rows <- cutree(hc.rows, k=row.branches)
+   treeMtx.cols <- cutree(hc.cols, k=col.branches)
+
+   #treeMtx.rows <- cutree(hc.rows, k=11)
+   #treeMtx.cols <- cutree(hc.cols, k=11)
    #treeMtx.rows <- cutree(hc.rows, k=1:r)
    #treeMtx.cols <- cutree(hc.cols, k=1:c)
 
